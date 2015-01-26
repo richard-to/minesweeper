@@ -1,0 +1,97 @@
+body {
+  background: #1d2028;
+  font-family: FontAwesome, Helvetica, Arial;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  font-size: 18px;
+  padding: 40px 20px;
+}
+
+.container-center {
+  margin: auto;
+}
+
+/* Source: http://stackoverflow.com/questions/826782/css-rule-to-disable-text-selection-highlighting; */
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.timer {
+  color: #fff;
+  float: left;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.panel-btn {
+  text-align: right;
+}
+
+.btn {
+  background: #1d2028;
+  border: 2px solid #7b90a4;
+  border-radius: 10px;
+  color: #7b90a4;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 10px;
+}
+
+.btn.selected,
+.btn:hover {
+  border-color: #fff;
+  color: #fff;
+}
+
+.btn:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.btn-restart {
+  margin-top: 20px;
+}
+
+.mine-counter {
+  color: #fff;
+  margin: 20px 0;
+  padding-left: 2px;
+}
+
+.mine {
+  color: #a3957a;
+}
+
+.flag {
+  color: #ececec;
+}
+
+.minesweeper-square {
+  background: #7b90a4;
+  border: 2px solid #1d2028;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-block;
+  font-family: monospace;
+  text-align: center;
+}
+
+.minesweeper-square-visible {
+  background: #1d2028;
+  color: #7b90a4;
+  cursor: default;
+}
+
+.minesweeper-square-visible.mine-found {
+  background: #b0403c;
+}
+
+.minesweeper-square-visible.mine-found .mine {
+  color: #fff;
+}
