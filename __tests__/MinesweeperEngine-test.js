@@ -1,5 +1,7 @@
 jest.autoMockOff();
 
+var _ = require('lodash');
+
 var SquareValue = require('../src/minesweeper/Constants').SquareValue;
 var SquareState = require('../src/minesweeper/Constants').SquareState;
 var GameEngine = require('../src/minesweeper/GameEngine');
@@ -20,7 +22,7 @@ describe('Game Engine', function() {
 
   it('clones a square', function() {
     var square = GameEngine.createSquare(SquareValue.MINE, SquareState.FLAG);
-    var clonedSquare = GameEngine.cloneSquare(square);
+    var clonedSquare = _.clone(square);
     expect(square).not.toBe(clonedSquare);
   });
 
@@ -75,20 +77,11 @@ describe('Game Engine', function() {
     expect(board.length).toBe(height);
   });
 
-  it('calculates minesweeper board size', function() {
-    var width = 5;
-    var height = 15;
-    var board = GameEngine.generateEmptyBoard(width, height);
-    var size = GameEngine.getBoardSize(board);
-    expect(size.width).toBe(width);
-    expect(size.height).toEqual(height);
-  });
-
   it('clones a minesweeper board', function() {
     var width = 10;
     var height = 5;
     var board = GameEngine.generateEmptyBoard(width, height);
-    var clonedBoard = GameEngine.cloneBoard(board);
+    var clonedBoard = _.cloneDeep(board);
     expect(board).not.toBe(clonedBoard);
   });
 
@@ -98,17 +91,9 @@ describe('Game Engine', function() {
     var mines = 10;
     var board = GameEngine.generateEmptyBoard(width, height);
     var boardWithMines = GameEngine.generateMines(board, mines);
-    var size = GameEngine.getBoardSize(boardWithMines);
-    var mineCount = 0;
-    for (var y = 0; y < size.height; ++y) {
-      for (var x = 0; x < size.width; ++x) {
-        if (boardWithMines[y][x].value === SquareValue.MINE) {
-          ++mineCount;
-        }
-      }
-    }
-    expect(size.width).toBe(width);
-    expect(size.height).toBe(height);
+    var mineCount = GameEngine.countValue(boardWithMines, SquareValue.MINE);
+    expect(board[0].length).toBe(width);
+    expect(board.length).toBe(height);
     expect(mineCount).toBe(mines);
   });
 
@@ -155,21 +140,17 @@ describe('Game Engine', function() {
      *  0 1 1 1 0
      */
 
-    var calculateVisibility = function(board, size) {
-      var actualVisibility = [];
-      for (var y = 0; y < size.height; ++y) {
-        actualVisibility[y] = [];
-        for (var x = 0; x < size.width; ++x) {
-          actualVisibility[y][x] = board[y][x].state === SquareState.VISIBLE;
-        }
-      }
-      return actualVisibility;
+    var calculateVisibility = function(board) {
+      return board.map(function(row) {
+        return row.map(function(square) {
+          return square.state === SquareState.VISIBLE;
+        });
+      });
     };
 
     var width = 5;
     var height = 5;
     var board = GameEngine.generateEmptyBoard(width, height);
-    var size = GameEngine.getBoardSize(board);
 
     board[2][1] = GameEngine.createMineSquare();
     board[3][2] = GameEngine.createMineSquare();
@@ -184,7 +165,7 @@ describe('Game Engine', function() {
         [false, false, false, true, true],
         [false, false, false, true, true],
       ];
-      var actualVisibility = calculateVisibility(revealedBoard, size);
+      var actualVisibility = calculateVisibility(revealedBoard);
       expect(actualVisibility).toEqual(expectedVisibility);
     });
 
@@ -197,12 +178,12 @@ describe('Game Engine', function() {
         [false, false, false, false, false],
         [false, false, false, false, false],
       ];
-      var actualVisibility = calculateVisibility(revealedBoard, size);
+      var actualVisibility = calculateVisibility(revealedBoard);
       expect(actualVisibility).toEqual(expectedVisibility);
     });
 
     it('reveals board: with flag', function() {
-      var clonedBoard = GameEngine.cloneBoard(board);
+      var clonedBoard = _.cloneDeep(board);
       clonedBoard[1][3] = GameEngine.createSquare(SquareValue.EMPTY, SquareState.FLAG);
       clonedBoard[1][4] = GameEngine.createSquare(SquareValue.EMPTY, SquareState.FLAG);
 
@@ -214,7 +195,7 @@ describe('Game Engine', function() {
         [false, false, false, true, true],
         [false, false, false, true, true],
       ];
-      var actualVisibility = calculateVisibility(revealedBoard, size);
+      var actualVisibility = calculateVisibility(revealedBoard);
       expect(actualVisibility).toEqual(expectedVisibility);
     });
   });
@@ -240,30 +221,16 @@ describe('Game Engine', function() {
 
   it('can decide if the game has been won: No winner due to flag', function() {
     var board = generate3x3Board();
-    var size = GameEngine.getBoardSize(board);
     board[2][1] = GameEngine.createMineSquare();
-    for (var y = 0; y < size.height; ++y) {
-      for (var x = 0; x < size.width; ++x) {
-        if (board[y][x].value !== SquareValue.MINE) {
-          board[y][x].state = SquareState.VISIBLE;
-        }
-      }
-    }
+    board = GameEngine.revealSafeSquares(board);
     board[0][0] = GameEngine.createMineSquare();
     expect(GameEngine.checkWinner(board)).toBeTruthy();
   });
 
   it('can decide if the game has been won: Winner', function() {
     var board = generate3x3Board();
-    var size = GameEngine.getBoardSize(board);
     board[2][1] = GameEngine.createMineSquare();
-    for (var y = 0; y < size.height; ++y) {
-      for (var x = 0; x < size.width; ++x) {
-        if (board[y][x].value !== SquareValue.MINE) {
-          board[y][x].state = SquareState.VISIBLE;
-        }
-      }
-    }
+    board = GameEngine.revealSafeSquares(board);
     expect(GameEngine.checkWinner(board)).toBeTruthy();
   });
 

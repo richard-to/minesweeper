@@ -24,7 +24,6 @@ module.exports = {
         }
 
         if (this.props.visible || this.props.state === SquareState.VISIBLE) {
-
           return <div className={classes} style={styles}>{this.renderValue(this.props.value)}</div>;
         } else if (this.props.state === SquareState.FLAG) {
           return (

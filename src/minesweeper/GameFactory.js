@@ -42,7 +42,7 @@ module.exports = {
       },
 
       getBoard: function() {
-        return board;
+        return _.cloneDeep(board);
       },
 
       getMode: function() {
@@ -76,11 +76,14 @@ module.exports = {
         }
 
         if (GameEngine.isSquareFlagged(board[y][x])) {
-          board[y][x] = GameEngine.hideSquare(board[y][x]);
+          board = GameEngine.updateBoardSquare(
+            board, y, x, GameEngine.hideSquare(board[y][x]));
         } else if (mode === Mode.FLAG) {
-          board[y][x] = GameEngine.flagSquare(board[y][x]);
+          board = GameEngine.updateBoardSquare(
+            board, y, x, GameEngine.flagSquare(board[y][x]));
         } else if (GameEngine.checkSquareForMine(board[y][x])) {
-          board[y][x] = GameEngine.showSquare(board[y][x]);
+          board = GameEngine.updateBoardSquare(
+            board, y, x, GameEngine.showSquare(board[y][x]));
           status = GameStatus.LOST;
         } else {
           board = GameEngine.revealSquares(board, y, x);
